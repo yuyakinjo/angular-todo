@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { debounceTime, tap } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -8,9 +10,12 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'todo';
 
-  todos = new Map([
-    ['todo1', new Date()],
-    ['todo2', new Date()],
-    ['todo3', new Date()],
-  ]);
+  readonly form = new FormControl('');
+
+  todos = new Map();
+
+  add() {
+    this.todos.set(this.form.value, false);
+    this.form.setValue('');
+  }
 }
