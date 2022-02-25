@@ -1,1 +1,10 @@
 <h1>{{ title | uppercase }}</h1>
+
+<!-- <input type="text" [formControl]="form" /> -->
+
+<ul>
+  <li *ngFor="let todo of todos | keyvalue">
+    <span>{{ todo.key }}</span>
+    <span>{{ todo.value }}</span>
+  </li>
+</ul>
