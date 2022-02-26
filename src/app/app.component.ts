@@ -1,3 +1,4 @@
+import { KeyValue } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { debounceTime, tap } from 'rxjs';
@@ -12,10 +13,14 @@ export class AppComponent {
 
   readonly form = new FormControl('');
 
-  todos = new Map();
+  todos = new Map<string, boolean>();
 
   add() {
     this.todos.set(this.form.value, false);
     this.form.setValue('');
+  }
+
+  changeStatus(todo: KeyValue<string, boolean>) {
+    this.todos.set(todo.key, !todo.value);
   }
 }

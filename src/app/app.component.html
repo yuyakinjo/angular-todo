@@ -5,7 +5,11 @@
 
 <ul>
   <li *ngFor="let todo of todos | keyvalue">
-    <input type="checkbox" [checked]="todo.value" />
+    <input
+      type="checkbox"
+      [checked]="todo.value"
+      (click)="changeStatus(todo)"
+    />
     <span>{{ todo.key }}</span>
   </li>
 </ul>
