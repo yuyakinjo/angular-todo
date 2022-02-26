@@ -16,6 +16,7 @@ export class AppComponent {
   todos = new Map<string, boolean>();
 
   add() {
+    if (!this.form.value) return;
     this.todos.set(this.form.value, false);
     this.form.setValue('');
   }
