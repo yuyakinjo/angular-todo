@@ -7,7 +7,7 @@
 <ul>
   <ng-container *ngFor="let category of categories">
     <ng-container *ngIf="todos | keyvalue | done: category.status as filterd">
-      <h3>{{ category.title }} {{ filterd.length }}</h3>
+      <h3 *ngIf="filterd.length">{{ category.title }} {{ filterd.length }}</h3>
       <li *ngFor="let todo of filterd">
         <input type="checkbox" [checked]="todo.value" (click)="changeStatus(todo)" />
         <span>{{ todo.key }}</span>
