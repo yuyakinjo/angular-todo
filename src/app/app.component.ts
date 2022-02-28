@@ -17,12 +17,12 @@ export class AppComponent {
     { title: '完了', status: true },
   ] as const;
 
-  init = Object.entries<boolean>(JSON.parse(localStorage.getItem('backup') ?? '{}'));
+  snapshot = Object.entries<boolean>(JSON.parse(localStorage.getItem('snapshot') ?? '{}'));
 
-  todos = new Map<string, boolean>(this.init);
+  todos = new Map<string, boolean>(this.snapshot);
 
   backup() {
-    localStorage.setItem('backup', JSON.stringify(Object.fromEntries(this.todos)));
+    localStorage.setItem('snapshot', JSON.stringify(Object.fromEntries(this.todos)));
   }
 
   add() {
