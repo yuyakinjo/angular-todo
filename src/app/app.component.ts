@@ -1,7 +1,6 @@
 import { KeyValue } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { debounceTime, tap } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +8,7 @@ import { debounceTime, tap } from 'rxjs';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'todo';
+  headline = 'todo';
 
   readonly form = new FormControl('');
 
