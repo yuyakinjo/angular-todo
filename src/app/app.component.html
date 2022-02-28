@@ -5,12 +5,19 @@
 <h2>登録数 {{ todos.size }}</h2>
 
 <ul>
-  <li *ngFor="let todo of todos | keyvalue | done: false">
-    <input type="checkbox" [checked]="todo.value" (click)="changeStatus(todo)" />
-    <span>{{ todo.key }}</span>
-  </li>
-  <li *ngFor="let todo of todos | keyvalue | done: true">
-    <input type="checkbox" [checked]="todo.value" (click)="changeStatus(todo)" />
-    <span>{{ todo.key }}</span>
-  </li>
+  <ng-container *ngIf="todos | keyvalue | done: false as undones">
+    <h3>未完了 {{ undones.length }}</h3>
+    <li *ngFor="let todo of undones">
+      <input type="checkbox" [checked]="todo.value" (click)="changeStatus(todo)" />
+      <span>{{ todo.key }}</span>
+    </li>
+  </ng-container>
+
+  <ng-container *ngIf="todos | keyvalue | done: true as dones">
+    <h3>完了 {{ dones.length }}</h3>
+    <li *ngFor="let todo of dones">
+      <input type="checkbox" [checked]="todo.value" (click)="changeStatus(todo)" />
+      <span>{{ todo.key }}</span>
+    </li>
+  </ng-container>
 </ul>
