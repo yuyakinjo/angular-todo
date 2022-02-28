@@ -12,6 +12,11 @@ export class AppComponent {
 
   readonly form = new FormControl('');
 
+  categories = [
+    { title: '未完了', status: false },
+    { title: '完了', status: true },
+  ];
+
   todos = new Map<string, boolean>();
 
   add() {
