@@ -11,6 +11,7 @@
       <li *ngFor="let todo of filterd">
         <input type="checkbox" [checked]="todo.value" (click)="changeStatus(todo)" />
         <span>{{ todo.key }}</span>
+        <button (click)="remove(todo.key)">削除</button>
       </li>
     </ng-container>
   </ng-container>

@@ -28,4 +28,8 @@ export class AppComponent {
   changeStatus(todo: KeyValue<string, boolean>) {
     this.todos.set(todo.key, !todo.value);
   }
+
+  remove(title: string) {
+    this.todos.delete(title);
+  }
 }
