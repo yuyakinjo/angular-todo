@@ -15,7 +15,7 @@ export class AppComponent {
   categories = [
     { title: '未完了', status: false },
     { title: '完了', status: true },
-  ];
+  ] as const;
 
   todos = new Map<string, boolean>();
 
