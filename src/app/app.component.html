@@ -1,15 +1,16 @@
-<h1>{{ title | uppercase }}</h1>
+<h1>{{ headline | uppercase }}</h1>
 
 <input type="text" [formControl]="form" />
-<button (click)="add()">追加</button>
+<button (click)="add()" *ngIf="!!form.value">追加</button>
+<h2>登録数 {{ todos.size }}</h2>
 
 <ul>
-  <li *ngFor="let todo of todos | keyvalue">
-    <input
-      type="checkbox"
-      [checked]="todo.value"
-      (click)="changeStatus(todo)"
-    />
+  <li *ngFor="let todo of todos | keyvalue | done: false">
+    <input type="checkbox" [checked]="todo.value" (click)="changeStatus(todo)" />
+    <span>{{ todo.key }}</span>
+  </li>
+  <li *ngFor="let todo of todos | keyvalue | done: true">
+    <input type="checkbox" [checked]="todo.value" (click)="changeStatus(todo)" />
     <span>{{ todo.key }}</span>
   </li>
 </ul>
