@@ -17,22 +17,28 @@ export class AppComponent {
     { title: '完了', status: true },
   ] as const;
 
-  todos = new Map<string, boolean>(Object.entries(JSON.parse(localStorage.getItem('backup') ?? '{}')));
+  init = Object.entries<boolean>(JSON.parse(localStorage.getItem('backup') ?? '{}'));
+
+  todos = new Map<string, boolean>(this.init);
+
+  backup() {
+    localStorage.setItem('backup', JSON.stringify(Object.fromEntries(this.todos)));
+  }
 
   add() {
     if (!this.form.value) return;
     this.todos.set(this.form.value, false);
     this.form.setValue('');
-    localStorage.setItem('backup', JSON.stringify(Object.fromEntries(this.todos)));
+    this.backup();
   }
 
   changeStatus(todo: KeyValue<string, boolean>) {
     this.todos.set(todo.key, !todo.value);
-    localStorage.setItem('backup', JSON.stringify(Object.fromEntries(this.todos)));
+    this.backup();
   }
 
   remove(title: string) {
     this.todos.delete(title);
-    localStorage.setItem('backup', JSON.stringify(Object.fromEntries(this.todos)));
+    this.backup();
   }
 }
