@@ -4,5 +4,5 @@
 <button (click)="add()" *ngIf="!!form.value">追加</button>
 <h2>登録数 {{ todos.size }}</h2>
 
-<app-todo-list [todos]="todos"></app-todo-list>
-<app-todo-list [todos]="todos" [status]="true"></app-todo-list>
+<app-todo-list></app-todo-list>
+<app-todo-list [status]="true"></app-todo-list>

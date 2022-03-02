@@ -9,6 +9,12 @@ export class TodoService {
 
   readonly todos = new Map<string, boolean>(this.#snapshot);
 
+  add(title: string) {
+    if (!title) return;
+    this.todos.set(title, false);
+    this.backup();
+  }
+
   changeStatus(todo: KeyValue<string, boolean>) {
     this.todos.set(todo.key, !todo.value);
     this.backup();

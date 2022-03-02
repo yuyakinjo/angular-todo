@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { TodoService } from './service/todo.service';
 
 @Component({
   selector: 'app-root',
@@ -11,18 +12,12 @@ export class AppComponent {
 
   readonly form = new FormControl('');
 
-  snapshot = Object.entries<boolean>(JSON.parse(localStorage.getItem('snapshot') ?? '{}'));
+  todos = this.todoService.todos;
 
-  todos = new Map<string, boolean>(this.snapshot);
+  constructor(private todoService: TodoService) {}
 
   add() {
-    if (!this.form.value) return;
-    this.todos.set(this.form.value, false);
+    this.todoService.add(this.form.value);
     this.form.setValue('');
-    this.backup();
-  }
-
-  backup() {
-    localStorage.setItem('snapshot', JSON.stringify(Object.fromEntries(this.todos)));
   }
 }
