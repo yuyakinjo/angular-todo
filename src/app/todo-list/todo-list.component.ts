@@ -11,6 +11,10 @@ export class TodoListComponent {
 
   @Input() status = false;
 
+  @Input() doneLabel = '完了';
+
+  @Input() inProcessLabel = '未完了';
+
   backup() {
     localStorage.setItem('snapshot', JSON.stringify(Object.fromEntries(this.todos)));
   }
