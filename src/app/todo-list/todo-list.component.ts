@@ -1,11 +1,12 @@
 import { KeyValue } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TodoService } from '../service/todo.service';
 
 @Component({
   selector: 'app-todo-list',
   templateUrl: './todo-list.component.html',
   styleUrls: ['./todo-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodoListComponent {
   @Input() status = false;
@@ -14,7 +15,7 @@ export class TodoListComponent {
 
   @Input() inProcessLabel = '未完了';
 
-  todos = this.todoService.todos;
+  todos$ = this.todoService.todos$;
 
   constructor(private todoService: TodoService) {}
 
