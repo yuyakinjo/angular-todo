@@ -1,1 +1,2 @@
-<p>todo-input works!</p>
+<input type="text" [formControl]="form" />
+<button (click)="add()" *ngIf="!!form.value">追加</button>

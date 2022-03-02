@@ -1,15 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { TodoService } from '../service/todo.service';
 
 @Component({
   selector: 'app-todo-input',
   templateUrl: './todo-input.component.html',
-  styleUrls: ['./todo-input.component.scss']
+  styleUrls: ['./todo-input.component.scss'],
 })
-export class TodoInputComponent implements OnInit {
+export class TodoInputComponent {
+  readonly form = new FormControl('');
 
-  constructor() { }
+  constructor(private todoService: TodoService) {}
 
-  ngOnInit(): void {
+  add() {
+    this.todoService.add(this.form.value);
+    this.form.setValue('');
   }
-
 }

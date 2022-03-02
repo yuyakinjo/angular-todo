@@ -1,7 +1,6 @@
 <h1>{{ headline | uppercase }}</h1>
 
-<input type="text" [formControl]="form" />
-<button (click)="add()" *ngIf="!!form.value">追加</button>
+<app-todo-input></app-todo-input>
 <h2>登録数 {{ todos.size }}</h2>
 
 <app-todo-list></app-todo-list>
