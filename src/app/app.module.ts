@@ -4,11 +4,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DonePipe } from './done.pipe';
-import { TodoListComponent } from './todo-list/todo-list.component';
+import { TodoCountComponent } from './todo-count/todo-count.component';
 import { TodoInputComponent } from './todo-input/todo-input.component';
+import { TodoListComponent } from './todo-list/todo-list.component';
 
 @NgModule({
-  declarations: [AppComponent, DonePipe, TodoListComponent, TodoInputComponent],
+  declarations: [AppComponent, DonePipe, TodoListComponent, TodoInputComponent, TodoCountComponent],
   imports: [BrowserModule, AppRoutingModule, ReactiveFormsModule],
   providers: [],
   bootstrap: [AppComponent],
