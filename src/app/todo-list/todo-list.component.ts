@@ -1,5 +1,6 @@
 import { KeyValue } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { TodoService } from '../service/todo.service';
 
 @Component({
   selector: 'app-todo-list',
@@ -7,25 +8,21 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./todo-list.component.scss'],
 })
 export class TodoListComponent {
-  @Input() todos = new Map();
-
   @Input() status = false;
 
   @Input() doneLabel = '完了';
 
   @Input() inProcessLabel = '未完了';
 
-  backup() {
-    localStorage.setItem('snapshot', JSON.stringify(Object.fromEntries(this.todos)));
-  }
+  todos = this.todoService.todos;
+
+  constructor(private todoService: TodoService) {}
 
   changeStatus(todo: KeyValue<string, boolean>) {
-    this.todos.set(todo.key, !todo.value);
-    this.backup();
+    this.todoService.changeStatus(todo);
   }
 
   remove(title: string) {
-    this.todos.delete(title);
-    this.backup();
+    this.todoService.delete(title);
   }
 }
