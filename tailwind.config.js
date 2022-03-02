@@ -3,5 +3,6 @@ module.exports = {
   theme: {
     extend: {},
   },
+  prefix: "tw-",
   plugins: [require("@tailwindcss/forms"), require("@tailwindcss/typography")],
 };
