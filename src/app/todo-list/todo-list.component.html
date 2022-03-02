@@ -1,12 +1,10 @@
 <ul>
-  <ng-container *ngFor="let category of categories">
-    <ng-container *ngIf="todos | keyvalue | done: category.status as filterd">
-      <h3 *ngIf="filterd.length">{{ category.title }} {{ filterd.length }}</h3>
-      <li *ngFor="let todo of filterd">
-        <input type="checkbox" [checked]="todo.value" (click)="changeStatus(todo)" />
-        <span>{{ todo.key }}</span>
-        <button (click)="remove(todo.key)">削除</button>
-      </li>
-    </ng-container>
+  <ng-container *ngIf="todos | keyvalue | done: status as filterd">
+    <h3 *ngIf="filterd.length">{{ status ? "完了" : "未完了" }} {{ filterd.length }}</h3>
+    <li *ngFor="let todo of filterd">
+      <input type="checkbox" [checked]="todo.value" (click)="changeStatus(todo)" />
+      <span>{{ todo.key }}</span>
+      <button (click)="remove(todo.key)">削除</button>
+    </li>
   </ng-container>
 </ul>

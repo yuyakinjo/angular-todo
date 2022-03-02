@@ -7,12 +7,9 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./todo-list.component.scss'],
 })
 export class TodoListComponent {
-  categories = [
-    { title: '未完了', status: false },
-    { title: '完了', status: true },
-  ] as const;
-
   @Input() todos = new Map();
+
+  @Input() status = false;
 
   backup() {
     localStorage.setItem('snapshot', JSON.stringify(Object.fromEntries(this.todos)));
