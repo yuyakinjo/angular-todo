@@ -12,20 +12,20 @@ export class TodoService {
   add(title: string) {
     if (!title) return;
     this.todos.set(title, false);
-    this.backup();
+    this.#snapshotUpdate();
   }
 
   changeStatus(todo: KeyValue<string, boolean>) {
     this.todos.set(todo.key, !todo.value);
-    this.backup();
-  }
-
-  backup() {
-    localStorage.setItem('snapshot', JSON.stringify(Object.fromEntries(this.todos)));
+    this.#snapshotUpdate();
   }
 
   delete(title: string) {
     this.todos.delete(title);
-    this.backup();
+    this.#snapshotUpdate();
+  }
+
+  #snapshotUpdate() {
+    localStorage.setItem('snapshot', JSON.stringify(Object.fromEntries(this.todos)));
   }
 }
