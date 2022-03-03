@@ -1,6 +1,6 @@
-import { KeyValue } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { TodoService } from './service/todo.service';
 
 @Component({
   selector: 'app-root',
@@ -12,33 +12,12 @@ export class AppComponent {
 
   readonly form = new FormControl('');
 
-  categories = [
-    { title: '未完了', status: false },
-    { title: '完了', status: true },
-  ] as const;
+  todos = this.todoService.todos;
 
-  snapshot = Object.entries<boolean>(JSON.parse(localStorage.getItem('snapshot') ?? '{}'));
-
-  todos = new Map<string, boolean>(this.snapshot);
-
-  backup() {
-    localStorage.setItem('snapshot', JSON.stringify(Object.fromEntries(this.todos)));
-  }
+  constructor(private todoService: TodoService) {}
 
   add() {
-    if (!this.form.value) return;
-    this.todos.set(this.form.value, false);
+    this.todoService.add(this.form.value);
     this.form.setValue('');
-    this.backup();
-  }
-
-  changeStatus(todo: KeyValue<string, boolean>) {
-    this.todos.set(todo.key, !todo.value);
-    this.backup();
-  }
-
-  remove(title: string) {
-    this.todos.delete(title);
-    this.backup();
   }
 }
