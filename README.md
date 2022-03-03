@@ -8,7 +8,7 @@
 
 # 内容
 
-1. Angular で TODO 表 作成
+Angular で TODO 表 作成
 
 # 環境
 
