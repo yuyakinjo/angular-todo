@@ -1,4 +1,5 @@
 [nvm]: https://github.com/nvm-sh/nvm
+[setup]: https://github.com/yuyakinjo/angular-todo/blob/main/makdowns/setup.md
 
 # Angular のハンズオン集
 
@@ -27,3 +28,7 @@ nvm install lts
 ```bash
 nvm use lts
 ```
+
+# 目次
+
+1. [セットアップ編][setup]
