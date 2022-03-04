@@ -1,3 +1,6 @@
+[eslint]: https://eslint.org/
+[prettier]: https://prettier.io/
+
 # セットアップ編
 
 # 1. workspace へ移動
@@ -74,3 +77,58 @@ export class AppComponent {
 下記のような画面が表示されます。
 
 ![スクリーンショット 2022-03-04 9 58 27](https://user-images.githubusercontent.com/20474933/156678820-95ed8757-2ad3-4d39-89d7-985cfc674c16.png)
+
+# 6. ESLint・Prettier 追加
+
+編集しているうちに、人によってばらつきが出ないように開発初期で [ESLint][eslint] と [Prettier][prettier] の設定を行います。
+
+簡単に説明すると、ESLint はコードを書くときのルールをチェックしてくれるツールです。
+Prettier は、コードを書くときのスタイルを整えてくれるツールです。
+
+## 6-1. ESLint 追加
+
+Angular での ESLint の設定を追加していきます。
+
+```bash
+npx ng add @angular-eslint/schematics
+```
+
+上記コマンドを実行すると、自動で ESLint のコマンド・パッケージ・config ファイルが追加されます。
+
+次は Prettier を追加します。
+
+```bash
+npm i -D prettier eslint-config-prettier
+```
+
+現状では、Prettier と ESLint が競合してしまうので、競合しないようにするために、以下のように設定を変更します。
+
+```diff_json
+# .eslintrc.json
+
+{
+  "root": true,
+  "ignorePatterns": [
+    "projects/**/*"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "parserOptions": {
+        "project": [
+          "tsconfig.json"
+        ],
+        "createDefaultProgram": true
+      },
+      "extends": [
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates",
++       "prettier"
+      ],
+  // 以下省略
+}
+
+
+```
