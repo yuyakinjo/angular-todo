@@ -57,20 +57,24 @@ Hello World を表示してみましょう。
 初期の表示している実態は`app.component.ts`と`app.component.html`です。
 このファイルを編集すると反映されます。
 
-```html:src/app/app.component.html
+### **`src/app/app.component.html`**
+
+```html
 <h1>{{ title }}</h1>
 ```
 
-```typescript:src/app/app.component.ts
-import { Component } from '@angular/core';
+### **`src/app/app.component.ts`**
+
+```typescript
+import { Component } from "@angular/core";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.scss"],
 })
 export class AppComponent {
-  title = "hello world"
+  title = "hello world";
 }
 ```
 
@@ -103,9 +107,9 @@ npm i -D prettier eslint-config-prettier
 
 現状では、Prettier と ESLint が競合してしまうので、競合しないようにするために、以下のように設定を変更します。
 
-```diff
-# .eslintrc.json
+### **`.eslintrc.json`**
 
+```diff
 {
   "root": true,
   "ignorePatterns": [
@@ -141,7 +145,7 @@ npm i -D prettier eslint-config-prettier
 
 ルートディレクトリに `.vscode` というフォルダを用意して、`settings.json`を作成します。
 
-#### **`.vscode/settings.json`**
+### **`.vscode/settings.json`**
 
 ```json
 {
