@@ -7,25 +7,25 @@
 
 `workspace`(各々の任意の場所で構いません)から angular-cli で初期フォルダを作成するために、フォルダ作成していい任意の場所に移動。
 
-```bash
+```fish
 cd workspace
 ```
 
 # 2. angular-cli で `ng new` を実行
 
-```bash
+```fish
 npx @angular/cli new angular-todo --style scss --routing
 ```
 
 # 3. `ng new` で作成したフォルダに移動
 
-```bash
+```fish
 cd angular-todo
 ```
 
 # 4. VSCode で開く
 
-```bash
+```fish
 code .
 ```
 
@@ -37,13 +37,13 @@ VSCode で開いたら、以下のようになっていると思います。
 
 サーバーを立ち上げて、ブラウザでアクセスしてみましょう。
 
-```bash
+```fish
 npm run start
 ```
 
 Angular のローカルホストは 4200 ポートで開きます。
 
-```bash
+```fish
 http://localhost:4200
 ```
 
@@ -93,7 +93,7 @@ Prettier は、コードを書くときのスタイルを整えてくれるツ�
 
 Angular での ESLint の設定を追加していきます。
 
-```bash
+```fish
 npx ng add @angular-eslint/schematics
 ```
 
@@ -101,7 +101,7 @@ npx ng add @angular-eslint/schematics
 
 次は Prettier を追加します。
 
-```bash
+```fish
 npm i -D prettier eslint-config-prettier
 ```
 
