@@ -85,7 +85,7 @@ export class AppComponent {
 簡単に説明すると、ESLint はコードを書くときのルールをチェックしてくれるツールです。
 Prettier は、コードを書くときのスタイルを整えてくれるツールです。
 
-## 6-1. ESLint 追加
+## 6-1. ESLint・Prettier 追加
 
 Angular での ESLint の設定を追加していきます。
 
@@ -130,5 +130,27 @@ npm i -D prettier eslint-config-prettier
   // 以下省略
 }
 
+```
 
+## 6-2. VSCode 上で ESLint や Prettier が効くように下記ファイル追加
+
+設定の追加は完了しましたが、現状は`npm run lint`を実行しないと、ESLint と Prettier が効かないです。
+
+これらが効くタイミングで一番いいのは、VSCode 上のファイル保存で効くと、コマンドを実行する手間を省くことができます。
+その設定を追加しましょう。
+
+ルートディレクトリに `.vscode` というフォルダを用意して、`settings.json`を作成します。
+
+#### **`.vscode/settings.json`**
+
+```json
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "extensions.ignoreRecommendations": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
+    "source.organizeImports": true
+  }
+}
 ```
