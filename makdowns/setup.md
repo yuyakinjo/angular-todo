@@ -145,6 +145,10 @@ npm i -D prettier eslint-config-prettier
 
 ルートディレクトリに `.vscode` というフォルダを用意して、`settings.json`を作成します。
 
+```fish
+mkdir -p $PWD/.vscode; echo "" > .vscode/settings.json
+```
+
 ### **`.vscode/settings.json`**
 
 ```json
@@ -158,3 +162,113 @@ npm i -D prettier eslint-config-prettier
   }
 }
 ```
+
+これで、ファイル保存時に ESLint と Prettier が効くようになりました。
+
+現状、Prettier はすべてのファイルに対して適応したわけではないので、コマンドを追加して実行してみましょう
+
+#### **`package.json`**
+
+```diff
+{
+  "name": "delete-todo",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "lint": "ng lint",
++   "prettier": "prettier --write --check '**/*'"
+  },
+  # 以下省略
+```
+
+```fish
+npm run prettier
+```
+
+コマンド実行後、ルートディレクトリすべてのファイルに Prettier が適応されるはずです。
+対象外のファイルもエラーとして表示されるので、それは除外リストに追加しましょう。
+
+```fish
+touch .prettierignore
+```
+
+#### **`.prettierignore`**
+
+```
+.gitkeep
+favicon.ico
+.browserslistrc
+.editorconfig
+.gitignore
+.prettierignore
+```
+
+再度、`npm run prettier` を実行して、エラーファイルがなければ OK です。
+
+```fish
+npm run prettier
+```
+
+## 6-3. VSCode 拡張共通 設定
+
+ただし、ESLint・Prettier の VSCode の拡張はたくさんあります。
+チーム開発をする時は、拡張を共通の ID をおくと、たくさんある中から選択できるようになります。
+
+```fish
+echo "" > .vscode/extensions.json
+```
+
+### **`.vscode/extensions.json`**
+
+```json
+{
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=827846
+  "recommendations": ["angular.ng-template", "esbenp.prettier-vscode", "dbaeumer.vscode-eslint"]
+}
+```
+
+上記のように、拡張を共通の ID をおくことで、拡張を選択できるようになります。
+この中にインストールしていない拡張があると、インストールを促すようにできます。
+試しに、VSCode を再起動してみます。
+
+すると、このディレクトリで推奨している拡張のインストールを促すポップアップが表示されました ↓
+
+<img width="547" alt="スクリーンショット 2022-03-04 11 06 35" src="https://user-images.githubusercontent.com/20474933/156686631-c1543acf-484c-4919-b2cf-dcff6258f40d.png">
+
+## 6-4. わざとエラーを起こす
+
+ちゃんと、指摘をしてくれるか、確かめてみましょう。
+`.eslintrc.json`をみると、`overrides.rules.@angular-eslint/component-selector.style` が `kebab-case` になっています。
+コンポーネントの selector がケバブケースに設定されているので、わざとキャメルケースにしてみます。
+
+### **`src/app/app.component.ts`**
+
+```diff
+import { Component } from '@angular/core';
+
+@Component({
++  selector: 'appRoot',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+// 以下省略
+```
+
+コンポーネントのセレクターを `appRoot` にして、コマンドを実行しましょう。
+（既に VSCode 上でも指摘でているはずですが）
+
+```fish
+npm run lint
+```
+
+エラー対象ファイルと、エラーメッセージも表示されれば OK です。
+
+<img width="365" alt="スクリーンショット 2022-03-04 11 43 17" src="https://user-images.githubusercontent.com/20474933/156689056-b2c33bee-f58a-4116-a627-c7c850674978.png">
+
+セレクターは元に戻しておきましょう。
+
+お疲れ様でした 🐴
