@@ -103,7 +103,7 @@ npm i -D prettier eslint-config-prettier
 
 現状では、Prettier と ESLint が競合してしまうので、競合しないようにするために、以下のように設定を変更します。
 
-```diff_json
+```diff
 # .eslintrc.json
 
 {
