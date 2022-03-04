@@ -70,3 +70,7 @@ export class AppComponent {
   title = "hello world"
 }
 ```
+
+下記のような画面が表示されます。
+
+![スクリーンショット 2022-03-04 9 58 27](https://user-images.githubusercontent.com/20474933/156678820-95ed8757-2ad3-4d39-89d7-985cfc674c16.png)
