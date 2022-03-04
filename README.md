@@ -31,6 +31,12 @@ nvm install lts
 nvm use lts
 ```
 
+```bash
+node -v
+
+#=> v16.14.0
+```
+
 # 目次
 
 1. [セットアップ編][setup]
