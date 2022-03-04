@@ -30,12 +30,32 @@ VSCode で開いたら、以下のようになっていると思います。
 
 ![スクリーンショット 2022-03-03 20 32 55](https://user-images.githubusercontent.com/20474933/156556711-c2d82177-e29d-490a-a0bb-d27ab65c0785.png)
 
+# 5. `npm run start` を実行
+
+サーバーを立ち上げて、ブラウザでアクセスしてみましょう。
+
+```bash
+npm run start
+```
+
+Angular のローカルホストは 4200 ポートで開きます。
+
+```bash
+http://localhost:4200
+```
+
+下記のような画面が表示されます。
+
+![スクリーンショット 2022-03-04 9 52 05](https://user-images.githubusercontent.com/20474933/156678314-1548ea27-146e-4e70-9823-4780e187b3f5.png)
+
 # 5. Hello World
 
 Hello World を表示してみましょう。
+初期の表示している実態は`app.component.ts`と`app.component.html`です。
+このファイルを編集すると反映されます。
 
 ```html:src/app/app.component.html
-<h1>{{ title | uppercase }}</h1>
+<h1>{{ title }}</h1>
 ```
 
 ```typescript:src/app/app.component.ts
@@ -47,6 +67,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = "todo"
+  title = "hello world"
 }
 ```
