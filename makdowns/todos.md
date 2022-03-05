@@ -3,6 +3,7 @@
 [angular_pipe_introduction]: https://angular.jp/guide/pipes
 [keyvalue_pipe]: https://angular.jp/api/common/KeyValuePipe
 [uppercase_pipe]: https://angular.jp/api/common/UpperCasePipe
+[binding-syntax]: https://angular.jp/guide/binding-syntax#types-of-data-binding
 
 # todo リストを表示
 
@@ -172,3 +173,456 @@ push は配列に破壊的操作をするので、concat を使って、元の�
 
 Map オブジェクトは、データ操作の実装に差がつかないですが、配列操作のほうはやり方に差がだいぶ出そうですね。
 そしてなにより、Map オブジェクトは短くて直感的です。
+
+# フォームの追加
+
+タイトルを入力して、「追加」ボタンを押すと、追加されたタスクが表示されるようにします。
+
+Angular では、[テンプレート駆動](https://angular.jp/guide/forms)と[リアクティブフォーム](https://angular.jp/guide/reactive-forms)の 2 種類でフォームを作ることができます。
+
+# 2. [テンプレート駆動](https://angular.jp/guide/forms)と[リアクティブフォーム](https://angular.jp/guide/reactive-forms)
+
+簡単にいうと、[テンプレート駆動](https://angular.jp/guide/forms)はテンプレート側(HTML)にモデルを記述し、[リアクティブフォーム](https://angular.jp/guide/reactive-forms)はコンポーネント側でモデル(入力値)を管理します。
+
+テンプレート駆動とリアクティブフォームの違いについての詳細は[こちら](https://angular.jp/guide/forms-overview)に公式で比較がまとめられています。
+
+フォームを作る上で、どちらも重要なアプローチですが、[リアクティブフォーム](https://angular.jp/guide/reactive-forms)のほうが Typescript で書ける（HTML 知らん）のでリアクティブフォームを採用します。
+
+## ReactiveFormsModule の追加
+
+まずは`app.component.ts`に`ReactiveFormModule`を追加します。
+
+### **`src/app/app.module.ts`**
+
+```diff
+import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+
+@NgModule({
+  declarations: [AppComponent],
++  imports: [BrowserModule, AppRoutingModule, ReactiveFormsModule],
+  providers: [],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
+
+これで、`ReactiveFormsModule`を使用することができます。
+
+# todo のタイトル入力フォームを表示
+
+### **`src/app/app.component.ts`**
+
+```diff
+import { Component } from '@angular/core';
+import { FormControl } from '@angular/forms';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+})
+export class AppComponent {
+  title = 'todo';
+
++  readonly form = new FormControl('');
+
++  todos = new Map();
+
++  add() {
++    this.todos.set(this.form.value, false);
++    this.form.setValue('');
++  }
+}
+```
+
+### **`src/app/app.component.html`**
+
+```diff
+<h1>{{ title | uppercase }}</h1>
+
++ <input type="text" [formControl]="form" placeholder="タイトルを入力" />
++ <button (click)="add()">追加</button>
+
+<ul>
+  <li *ngFor="let todo of todos | keyvalue">
++   <input type="checkbox" [checked]="todo.value" />
+    <span>{{ todo.key }}</span>
+  </li>
+</ul>
+```
+
+## ポイント
+
+1. `new FormControl('')` で ReactiveForm を初期化。初期値は空文字列。
+2. テンプレートの `<input type="text" [formControl]="form" />` に `form` をバインド。
+3. `(click)` は クリックイベントをバインドでき、コンポーネント側の `add()` メソッドを呼び出す
+4. `[checked]` は input の チェックボックスのプロパティとバインドできる。
+
+[テンプレートとコンポーネント側を結びつける構文][binding-syntax]はいくつか種類があります。
+
+今回使用するのは下記です。
+
+1. 変数にバインド `{{ title }}` のように波括弧で囲む
+2. イベントにバインド `(click)` のように丸括弧
+3. プロパティにバインド `[checked]` のように四角い括弧
+
+画面をみると、下記のようになっていると思います。
+
+![スクリーンショット 2022-03-04 16 42 30](https://user-images.githubusercontent.com/20474933/156720790-59c11ef3-3d19-411e-ac75-c5b5e9a10f73.png)
+
+フォームになにかタイトルを入力して、追加ボタンを押すと、`todos` に追加されます。
+
+↓
+
+![スクリーンショット 2022-03-04 16 43 07](https://user-images.githubusercontent.com/20474933/156720753-1934ec60-6623-4def-aeae-8e47233e64d5.png)
+
+# todos のデータ更新
+
+実は、追加した todo をのチェックボックスをクリックしても、`todos` は更新されてません。
+
+html 上のチェックボックスがチェックついたり消えたりしているだけです。
+なので、チェックボックスのイベントもバインドしましょう。
+
+### **`src/app/app.component.ts`**
+
+```diff
+import { KeyValue } from '@angular/common';
+import { Component } from '@angular/core';
+import { FormControl } from '@angular/forms';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+})
+export class AppComponent {
+  title = 'todo';
+
+  readonly form = new FormControl('');
+
+  todos = new Map<string, boolean>();
+
+  add() {
+    this.todos.set(this.form.value, false);
+    this.form.setValue('');
+  }
+
++  changeStatus(todo: KeyValue<string, boolean>) {
++    this.todos.set(todo.key, !todo.value);
++  }
+}
+```
+
+### **`src/app/app.component.html`**
+
+```diff
+<h1>{{ title | uppercase }}</h1>
+
+<input type="text" [formControl]="form" placeholder="タイトルを入力" />
+<button (click)="add()">追加</button>
+
+<ul>
+  <li *ngFor="let todo of todos | keyvalue">
+    <input
+      type="checkbox"
+      [checked]="todo.value"
++      (click)="changeStatus(todo)"
+    />
+    <span>{{ todo.key }}</span>
+  </li>
+</ul>
+```
+
+これで、チェックボックスをクリックすると、`todos` のステータスが更新されます。
+見た目上は変わりません。
+
+# 空文字対応
+
+空文字のまま、追加ボタンを押すと、空文字が追加されてしまいます。
+
+![スクリーンショット 2022-03-04 16 45 04](https://user-images.githubusercontent.com/20474933/156721016-800d36ce-1b4a-46f9-8dc1-31f0dafdfa5a.png)
+
+これを防ぐには 2 つあります。
+
+1. 空文字の時は追加ボタンを表示しない（テンプレート側の対処）
+2. 空文字の時は追加しない（コンポーネント側の対処）
+
+両方やっていきましょう。
+
+### **`src/app/app.component.html`**
+
+```diff
+<h1>{{ title | uppercase }}</h1>
+
+<input type="text" [formControl]="form" placeholder="タイトルを入力" />
++ <button (click)="add()" *ngIf="!!form.value">追加</button>
+
+<ul>
+  <li *ngFor="let todo of todos | keyvalue">
+    <input
+      type="checkbox"
+      [checked]="todo.value"
+      (click)="changeStatus(todo)"
+    />
+    <span>{{ todo.key }}</span>
+  </li>
+</ul>
+
+```
+
+### **`src/app/app.component.ts`**
+
+```diff
+import { KeyValue } from '@angular/common';
+import { Component } from '@angular/core';
+import { FormControl } from '@angular/forms';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+})
+export class AppComponent {
+  title = 'todo';
+
+  readonly form = new FormControl('');
+
+  todos = new Map<string, boolean>();
+
+  add() {
++    if (!this.form.value) return;
+    this.todos.set(this.form.value, false);
+    this.form.setValue('');
+  }
+
+  changeStatus(todo: KeyValue<string, boolean>) {
+    this.todos.set(todo.key, !todo.value);
+  }
+}
+```
+
+## ポイント
+
+1. `*ngIf` に true → 表示、false → 非表示
+2. `!!form.value` は空文字のとき、false, それ以外は true になります。(`!!` は 値を boolean に変換する演算子でよく使われます)
+
+# 未完了・完了 を 分けて表示
+
+現在、完了・未完了の todo を一緒に表示していますが、ふたつに分けて表示するとなったら、どうしますか？
+
+例として下記のようになります。
+
+![スクリーンショット 2022-03-04 17 27 53](https://user-images.githubusercontent.com/20474933/156727229-0edd35d1-46e0-4e79-bbcb-c4a78f136276.png)
+
+データが配列の場合、コンポーネント側で `filter` などで分割しておいて、それぞれの要素を表示します。
+
+```typescript
+const todos = [{ title1: true }, { title2: false }];
+
+const dones = todos.filter((todo) => Reflect.get(todo, Reflect.ownKeys(todo).at(0)));
+const undones = todos.filter((todo) => !Reflect.get(todo, Reflect.ownKeys(todo).at(0)));
+```
+
+- すごく見通し悪いです(Object.keys などを使っても同じでしょう) 💦
+- `at(0)` は `Reflect.ownKeys(todo)` の 0 番目の要素を取得していますが、0 とか使いたくないですね
+
+しかし、今回は Map オブジェクトを使用していて、Map オブジェクトには、現在のデータを分割するようなメソッドはありません。
+
+## パイプを自作
+
+今回は自作でパイプを作って、パイプで条件分岐を行ってみます。
+
+AngularCLI で `ng generate pipe` を実行して、パイプを作成します。
+
+```fish
+npx ng g pipe pipes/done --skip-tests
+```
+
+## 未完了のみを表示してみる
+
+パイプをつかって、未完了のみを表示してみます。
+
+### **`src/app/app.component.ts`**
+
+```diff
+<h1>{{ title | uppercase }}</h1>
+
+<input type="text" [formControl]="form" placeholder="タイトルを入力" />
+<button (click)="add()" *ngIf="!!form.value">追加</button>
+
+<ul>
+  <h2>未完了</h2>
++  <li *ngFor="let todo of todos | keyvalue | done">
+    <input
+      type="checkbox"
+      [checked]="todo.value"
+      (click)="changeStatus(todo)"
+    />
+    <span>{{ todo.key }}</span>
+  </li>
+</ul>
+```
+
+### **`src/app/pipes/done.pipe.ts`**
+
+```diff
+import { KeyValue } from '@angular/common';
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({
+  name: 'done',
+})
+export class DonePipe implements PipeTransform {
++  transform(todos: KeyValue<string, boolean>[]) {
++    return todos.filter(({ value }) => !value);
++  }
+}
+```
+
+## ポイント
+
+1. テンプレート側に`done`という名前をつけて、パイプを使用するようにしました。
+2. `done` は、`@Pipe`　の`name: 'done'` で指定しています。
+3. KeyValue パイプのあとで使用しているので、`transform`の第一引数に渡ってくる値は `KeyValue<string, boolean>[]` です。
+4. Map オブジェクト が 配列に変換されているので、`filter` で分割しています。
+
+画面で todo 作成してみてください。
+
+![スクリーンショット 2022-03-04 18 19 11](https://user-images.githubusercontent.com/20474933/156735343-2e4a3386-b227-46f1-baef-b01faaec53ac.png)
+
+今作成した todo を完了してみてください。
+そうすると、未完了のみが表示されるので、完了した todo が消えるようになります。
+
+## 未完了・完了を表示
+
+donePipe は、未完了を表示するようになっていますが、柔軟に使いまわせるように、第 2 引数をとって完了・未完了を表示するようにしましょう。
+テンプレート側でパイプに`:`をつけて、パイプの引数を渡します。
+
+## **`src/app/app.component.html`**
+
+```diff
+<h1>{{ title | uppercase }}</h1>
+
+<input type="text" [formControl]="form" placeholder="タイトルを入力" />
+<button (click)="add()" *ngIf="!!form.value">追加</button>
+
+<ul>
+  <h2>未完了</h2>
++  <li *ngFor="let todo of todos | keyvalue | done: false">
+    <input
+      type="checkbox"
+      [checked]="todo.value"
+      (click)="changeStatus(todo)"
+    />
+    <span>{{ todo.key }}</span>
+  </li>
++  <h2>完了</h2>
++  <li *ngFor="let todo of todos | keyvalue | done: true">
++    <input
++      type="checkbox"
++      [checked]="todo.value"
++      (click)="changeStatus(todo)"
++    />
++    <span>{{ todo.key }}</span>
++  </li>
+</ul>
+```
+
+### **`src/app/pipes/done.pipe.ts`**
+
+```diff
+import { KeyValue } from '@angular/common';
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({
+  name: 'done',
+})
+export class DonePipe implements PipeTransform {
++  transform(todos: KeyValue<string, boolean>[], done = true) {
++    return todos.filter(({ value }) => value === done);
++  }
+}
+```
+
+## ポイント
+
+1. パイプの引数に `:` をつけて、パイプの引数を渡します。
+2. 渡された引数は、transform の第 2 引数に渡されます。
+3. transform の第 2 引数 `done` は初期値をとることもでき、その場合は 引数を省略もできます。
+
+これで下記のように条件分けができました。
+
+![スクリーンショット 2022-03-04 18 33 34](https://user-images.githubusercontent.com/20474933/156737816-f8772790-11b4-429d-9d22-b2066f22c381.png)
+
+# 各 todo の個数表示
+
+各 todo の個数を表示するようにしましょう。
+
+それには一度、`done`パイプを通過した後の個数が知りたいです。
+
+## **`src/app/app.component.html`**
+
+```diff
+<h1>{{ title | uppercase }}</h1>
+
+<input type="text" [formControl]="form" placeholder="タイトルを入力" />
+<button (click)="add()" *ngIf="!!form.value">追加</button>
++ <h2>登録数 {{ todos.size }}</h2>
+
+<ul>
++  <ng-container *ngIf="todos | keyvalue | done: false as undones">
++    <h3>未完了 {{ undones.length }}</h3>
++    <li *ngFor="let todo of undones">
++      <input
++        type="checkbox"
++        [checked]="todo.value"
++        (click)="changeStatus(todo)"
++      />
++      <span>{{ todo.key }}</span>
++    </li>
++  </ng-container>
++
++  <ng-container *ngIf="todos | keyvalue | done: true as dones">
++    <h3>完了 {{ dones.length }}</h3>
++    <li *ngFor="let todo of dones">
++      <input
++        type="checkbox"
++        [checked]="todo.value"
++        (click)="changeStatus(todo)"
++      />
++      <span>{{ todo.key }}</span>
++    </li>
++  </ng-container>
+</ul>
+```
+
+## ポイント
+
+1. Map オブジェクトは `size` というメソッドで個数を取得できます。
+2. `ng-container` は React でいう `Fragment` と同じです。実際にはレンダリングされません。
+3. `done`パイプ通過後のデータは `as` を使って、`undoens` と `dones` として取得します。
+
+下記のように表示ができれば OK です。
+
+![スクリーンショット 2022-03-04 19 15 36](https://user-images.githubusercontent.com/20474933/156744685-612e3999-faf6-4b69-bc39-d778aa54b1cd.png)
+
+# コンポーネントを作成
+
+テンプレートが膨らんできたので、コンポーネントを用意してみましょう。
+完了・未完了での違いを抽出することで、リストの記述はひとつにしたいです。
+違いをまとめると 2 つです。
+
+- タイトル (string)
+- ステータス（boolean）
+
+上記を変更できるコンポーネントを作っていきます。
+
+AngularCLI でコンポーネントを生成するコマンドを実行します。
+
+```fish
+npx ng generate component components/todo-list
+```
