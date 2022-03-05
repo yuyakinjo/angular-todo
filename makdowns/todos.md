@@ -626,3 +626,9 @@ AngularCLI でコンポーネントを生成するコマンドを実行します
 ```fish
 npx ng generate component components/todo-list
 ```
+
+略することも可能です ↓
+
+```fish
+npx ng g c components/todo-list
+```
