@@ -632,3 +632,198 @@ npx ng generate component components/todo-list
 ```fish
 npx ng g c components/todo-list
 ```
+
+## `todo-list` コンポーネント表示
+
+まずは新しく作成したコンポーネントを表示してみます。
+他コンポーネントに表示するときは接頭辞に「app」をつけるとルールになってます。
+これは各コンポーネントの TS ファイルの `selector` で定義されています。
+
+## **`src/app/app.component.html`**
+
+```diff
+<h1>{{ title | uppercase }}</h1>
+
+<input type="text" [formControl]="form" placeholder="タイトルを入力" />
+<button (click)="add()" *ngIf="!!form.value">追加</button>
+
++ <app-todo-list></app-todo-list>
+<ul>
+  <h2>未完了</h2>
+  <li *ngFor="let todo of todos | keyvalue | done: false">
+    <input
+      type="checkbox"
+      [checked]="todo.value"
+      (click)="changeStatus(todo)"
+    />
+    <span>{{ todo.key }}</span>
+  </li>
+  <h2>完了</h2>
+  <li *ngFor="let todo of todos | keyvalue | done: true">
+    <input
+      type="checkbox"
+      [checked]="todo.value"
+      (click)="changeStatus(todo)"
+    />
+    <span>{{ todo.key }}</span>
+  </li>
+</ul>
+
+```
+
+まずは、「todo-list wroks!」と表示されました。
+ここに移植していきます。
+
+![スクリーンショット 2022-03-05 10 45 20](https://user-images.githubusercontent.com/20474933/156862683-1a54b56f-b96d-4c53-ab37-38e3bf9bd3a8.png)
+
+## コンポーネント移植
+
+app.component.ts に 記述されている todo-list の箇所を移植します。
+
+まずは
+
+## **`src/app/components/todo-list/todo-list.component.html`**
+
+```diff
++ <ul>
++   <h2>未完了</h2>
++   <li *ngFor="let todo of todos | keyvalue | done: false">
++     <input
++       type="checkbox"
++       [checked]="todo.value"
++       (click)="changeStatus(todo)"
++     />
++     <span>{{ todo.key }}</span>
++   </li>
++   <h2>完了</h2>
++   <li *ngFor="let todo of todos | keyvalue | done: true">
++     <input
++       type="checkbox"
++       [checked]="todo.value"
++       (click)="changeStatus(todo)"
++     />
++     <span>{{ todo.key }}</span>
++   </li>
++ </ul>
+```
+
+## **`src/app/components/todo-list/todo-list.component.ts`**
+
+```diff
++ import { KeyValue } from '@angular/common';
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-todo-list',
+  templateUrl: './todo-list.component.html',
+  styleUrls: ['./todo-list.component.scss'],
+})
+export class TodoListComponent {
++  todos = new Map<string, boolean>();
+
++  changeStatus(todo: KeyValue<string, boolean>) {
++    this.todos.set(todo.key, !todo.value);
++  }
+}
+
+```
+
+## **`src/app/app.component.html`**
+
+```diff
+<h1>{{ title | uppercase }}</h1>
+
+<input type="text" [formControl]="form" placeholder="タイトルを入力" />
+<button (click)="add()" *ngIf="!!form.value">追加</button>
+
+<app-todo-list></app-todo-list>
+- <ul>
+-  <h2>未完了</h2>
+-  <li *ngFor="let todo of todos | keyvalue | done: false">
+-    <input
+-      type="checkbox"
+-      [checked]="todo.value"
+-      (click)="changeStatus(todo)"
+-    />
+-    <span>{{ todo.key }}</span>
+-  </li>
+-  <h2>完了</h2>
+-  <li *ngFor="let todo of todos | keyvalue | done: true">
+-    <input
+-      type="checkbox"
+-      [checked]="todo.value"
+-      (click)="changeStatus(todo)"
+-    />
+-    <span>{{ todo.key }}</span>
+-  </li>
+- </ul>
+
+```
+
+## **`src/app/app.component.ts`**
+
+```diff
+- import { KeyValue } from '@angular/common';
+import { Component } from '@angular/core';
+import { FormControl } from '@angular/forms';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+})
+export class AppComponent {
+  title = 'todo';
+
+  readonly form = new FormControl('');
+
+  todos = new Map<string, boolean>();
+
+  add() {
+    if (!this.form.value) return;
+    this.todos.set(this.form.value, false);
+    this.form.setValue('');
+  }
+
+-  changeStatus(todo: KeyValue<string, boolean>) {
+-    this.todos.set(todo.key, !todo.value);
+-  }
+}
+```
+
+これだと、各コンポーネントの `todos` が一致していないので、
+todo のタイトルを入力して追加しても、リストに表示されません。
+そこで、簡易的に親コンポーネント（`app.component.ts`）から子コンポーネント(`todo-list-component.ts`)に`todos`を渡しましょう。
+
+# `Input`を使って、親コンポーネントから子コンポーネントに値を渡す
+
+## **`src/app/app.component.ts`**
+
+```diff
+<h1>{{ title | uppercase }}</h1>
+
+<input type="text" [formControl]="form" placeholder="タイトルを入力" />
+<button (click)="add()" *ngIf="!!form.value">追加</button>
+
++ <app-todo-list [todos]="todos"></app-todo-list>
+```
+
+## **`src/app/components/todo-list/todo-list.component.ts`**
+
+```diff
+import { KeyValue } from '@angular/common';
++ import { Component, Input } from '@angular/core';
+
+@Component({
+  selector: 'app-todo-list',
+  templateUrl: './todo-list.component.html',
+  styleUrls: ['./todo-list.component.scss'],
+})
+export class TodoListComponent {
++  @Input() todos = new Map<string, boolean>();
+
+  changeStatus(todo: KeyValue<string, boolean>) {
+    this.todos.set(todo.key, !todo.value);
+  }
+}
+```
