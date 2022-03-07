@@ -1,3 +1,5 @@
+[プライベートフィールド]: https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Classes/Private_class_fields
+
 # LocalStorage に保存
 
 現在はリロードを行うと、追加した `todo` は消えてしまいます。
@@ -28,6 +30,17 @@ JSON 文字列　 → オブジェクト → Map オブジェクト
 1. Map オブジェクトをオブジェクトに変換するときは、[Object.fromEntries](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Object/fromEntries)を使用します。
 2. オブジェクトを JSON 文字列に変換するときは、[JSON.stringify](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)を使用します。
 
+上記をまとめると、以下のようクラスメソッドになります。
+
+```typescript
+  #backup(){
+    const mapToObject = Object.fromEntries(this.todos);
+    localStorage.setItem('todos', JSON.stringify(mapToObject));
+  }
+```
+
+`todos` が変化した後に `backup` メソッドを呼び込むと良さそうです。
+
 また、`Object.fromEntries` を使用するには、tsconfig の lib を`es2019`にしてください。
 
 ## **`tsconfig.json`**
@@ -40,17 +53,6 @@ JSON 文字列　 → オブジェクト → Map オブジェクト
     // 省略
 }
 ```
-
-上記をまとめると、以下のようクラスメソッドになります。
-
-```typescript
-  #backup(){
-    const mapToObject = Object.fromEntries(this.todos);
-    localStorage.setItem('todos', JSON.stringify(mapToObject));
-  }
-```
-
-`todos` が変化した後に `backup` メソッドを呼び込むと良さそうです。
 
 ## **`src/app/services/todo.service.ts`**
 
@@ -81,4 +83,4 @@ export class TodoService {
 }
 ```
 
-基本的に、`todos` が変化するのは サービス内でのみなので、コンポーネントなどで呼び出されても、backup を`backup` メソッドは呼び出す必要がありません。 メソッドとして呼び出させたくないときは、プライベートフィールド(#)を使用します。プライベートフィールドは、クラス内でのみ使用できます。
+基本的に、`todos` が変化するのは サービス内でのみなので、コンポーネントなどで呼び出されても、backup を`backup` メソッドは呼び出す必要がありません。 メソッドとして呼び出させたくないときは、[プライベートフィールド(#)][プライベートフィールド]を使用します。[プライベートフィールド(#)][プライベートフィールド]は、クラス内でのみ使用できます。
