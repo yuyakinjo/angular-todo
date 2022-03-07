@@ -827,3 +827,347 @@ export class TodoListComponent {
   }
 }
 ```
+
+## サービス追加
+
+ただ、このままでは、親コンポーネントと子コンポーネント で二重に `todos` が定義されている上、その他コンポーネントが作成されていくたびに、どのコンポーネントでどの値を渡さなきゃいけないのか把握する・そのままでは機能しないのは面倒です。
+
+この場合、todos がそれぞれ別のどこかで独立した値になっていると良さそうです。
+
+そこで、コンポーネントを横断できるサービスを作成します。
+
+```fish
+new: npx ng g service services/todo --skip-tests
+```
+
+このサービスは、シングルトンで、複数で定義しても、一意のクラスです。
+
+まずは、`todos` を `TodoService` で定義します。
+
+## **`src/app/services/todo.service.ts`**
+
+```diff
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class TodoService {
++  readonly todos = new Map<string, boolean>();
+}
+```
+
+コンポーネント内でサービスを使用するには、constructor で定義をします。
+
+## **`src/app/app.component.ts`**
+
+```diff
+import { Component } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { TodoService } from './services/todo.service';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+})
+export class AppComponent {
+  title = 'todo';
+
+  readonly form = new FormControl('');
+
++  todos = this.todoService.todos;
+
++  constructor(private todoService: TodoService) {}
+
+  add() {
+    if (!this.form.value) return;
+    this.todos.set(this.form.value, false);
+    this.form.setValue('');
+  }
+}
+```
+
+## **`src/app/components/todo-list/todo-list.component.ts`**
+
+```diff
+import { KeyValue } from '@angular/common';
+import { Component } from '@angular/core';
+import { TodoService } from 'src/app/services/todo.service';
+
+@Component({
+  selector: 'app-todo-list',
+  templateUrl: './todo-list.component.html',
+  styleUrls: ['./todo-list.component.scss'],
+})
+export class TodoListComponent {
++ readonly todos = this.todoService.todos;
+
++ constructor(private todoService: TodoService) {}
+
+  changeStatus(todo: KeyValue<string, boolean>) {
+    this.todos.set(todo.key, !todo.value);
+  }
+}
+```
+
+これで `@Input()` は、不要になったので、テンプレート側で削除しておきます。
+
+## **`src/app/app.component.html`**
+
+```diff
+<h1>{{ title | uppercase }}</h1>
+
+<input type="text" [formControl]="form" placeholder="タイトルを入力" />
+<button (click)="add()" *ngIf="!!form.value">追加</button>
+
+- <app-todo-list [todos]="todos"></app-todo-list>
++ <app-todo-list></app-todo-list>
+```
+
+これで、`todos` は、`TodoService` から取得して、コンポーネントが単独で機能するようになりました。
+
+ビジネスロジックは、サービスで定義されているのが良しとされているので
+`changeStatus`も、サービスで定義してそれを使いましょう。
+
+## **`src/app/services/todo.service.ts`**
+
+```diff
+import { KeyValue } from '@angular/common';
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class TodoService {
+  readonly todos = new Map<string, boolean>();
+
++  changeStatus(todo: KeyValue<string, boolean>) {
++    this.todos.set(todo.key, !todo.value);
++  }
+}
+```
+
+## **`src/app/components/todo-list/todo-list.component.ts`**
+
+```diff
+import { KeyValue } from '@angular/common';
+import { Component } from '@angular/core';
+import { TodoService } from 'src/app/services/todo.service';
+
+@Component({
+  selector: 'app-todo-list',
+  templateUrl: './todo-list.component.html',
+  styleUrls: ['./todo-list.component.scss'],
+})
+export class TodoListComponent {
+  readonly todos = this.todoService.todos;
+
+  constructor(private todoService: TodoService) {}
+
+  changeStatus(todo: KeyValue<string, boolean>) {
++    this.todoService.changeStatus(todo);
+  }
+}
+```
+
+# todo-form 作成
+
+`app.component.ts` には 構成だけが見える状態にしておけば、見通しがよくなるので `todo-form` を作成します。
+
+```fish
+npx ng g c components/todo-form --skip-tests
+```
+
+## **`src/app/app.component.html`**
+
+```diff
+<h1>{{ title | uppercase }}</h1>
+
++ <app-todo-form></app-todo-form>
+- <input type="text" [formControl]="form" placeholder="タイトルを入力" />
+- <button (click)="add()" *ngIf="!!form.value">追加</button>
+
+<app-todo-list></app-todo-list>
+```
+
+## **`src/app/app.component.ts`**
+
+```diff
+import { Component } from '@angular/core';
+- import { FormControl } from '@angular/forms';
+- import { TodoService } from './services/todo.service';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+})
+export class AppComponent {
+  title = 'todo';
+-
+-  readonly form = new FormControl('');
+-
+-  todos = this.todoService.todos;
+-
+-  constructor(private todoService: TodoService) {}
+-
+-  add() {
+-    if (!this.form.value) return;
+-    this.todos.set(this.form.value, false);
+-    this.form.setValue('');
+-  }
+}
+
+```
+
+## **`src/app/components/todo-form/todo-form.component.html`**
+
+```diff
++ <input type="text" [formControl]="form" placeholder="タイトルを入力" />
++ <button (click)="add()" *ngIf="!!form.value">追加</button>
+```
+
+## **`src/app/components/todo-form/todo-form.component.ts`**
+
+```diff
+import { Component } from '@angular/core';
++ import { FormControl } from '@angular/forms';
++ import { TodoService } from 'src/app/services/todo.service';
+
+@Component({
+  selector: 'app-todo-form',
+  templateUrl: './todo-form.component.html',
+  styleUrls: ['./todo-form.component.scss'],
+})
+export class TodoFormComponent {
++  readonly form = new FormControl('');
+
++  todos = this.todoService.todos;
+
++  constructor(private todoService: TodoService) {}
+
++  add() {
++    if (!this.form.value) return;
++    this.todos.set(this.form.value, false);
++    this.form.setValue('');
++  }
+}
+```
+
+これで、`app.component.ts` に `todo-form` を追加して、`todo-form` を使えるようになりました。
+実際の `app.component.html` にビジネスロジックがなく、各コンポーネントで独立して責務を果たせる形になっているかと思います。
+
+```html
+<h1>{{ title | uppercase }}</h1>
+
+<app-todo-form></app-todo-form>
+
+<app-todo-list></app-todo-list>
+```
+
+### 実際の画面
+
+![スクリーンショット 2022-03-07 10 27 45](https://user-images.githubusercontent.com/20474933/156952660-fb70321c-8ed2-42cf-9fd5-91652d9ab6bb.png)
+
+# 削除機能追加
+
+残りの機能を追加していきます。
+
+- 削除機能
+- リロードしても消えないように LocalStorage に保存
+
+削除から実装しましょう。
+
+まずはサービスに削除機能を追加 → コンポーネントで実装という流れにしましょう。
+
+## サービスで削除機能追加
+
+## **`src/app/services/todo.service.ts`**
+
+```diff
+import { KeyValue } from '@angular/common';
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class TodoService {
+  readonly todos = new Map<string, boolean>();
+
+  changeStatus(todo: KeyValue<string, boolean>) {
+    this.todos.set(todo.key, !todo.value);
+  }
+
++  remove(title: string) {
++    this.todos.delete(title);
++  }
+}
+```
+
+Map オブジェクト には、delete メソッドに、key を渡すことで削除できるようになっています。
+今 key は todo-form で入力した `title` になっているので、`title` を引数で受け取ります。
+
+続いて、remove をコンポーネント側で実装します。
+
+完了・未完了の両方で追加します。
+
+## **`src/app/components/todo-list/todo-list.component.html`**
+
+```diff
+<ul>
+  <h2>未完了</h2>
+  <li *ngFor="let todo of todos | keyvalue | done: false">
+    <input
+      type="checkbox"
+      [checked]="todo.value"
+      (click)="changeStatus(todo)"
+    />
+    <span>{{ todo.key }}</span>
++    <button (click)="remove(todo.key)">削除</button>
+  </li>
+  <h2>完了</h2>
+  <li *ngFor="let todo of todos | keyvalue | done: true">
+    <input
+      type="checkbox"
+      [checked]="todo.value"
+      (click)="changeStatus(todo)"
+    />
+    <span>{{ todo.key }}</span>
++    <button (click)="remove(todo.key)">削除</button>
+  </li>
+</ul>
+```
+
+## **`src/app/components/todo-list/todo-list.component.ts`**
+
+```diff
+import { KeyValue } from '@angular/common';
+import { Component } from '@angular/core';
+import { TodoService } from 'src/app/services/todo.service';
+
+@Component({
+  selector: 'app-todo-list',
+  templateUrl: './todo-list.component.html',
+  styleUrls: ['./todo-list.component.scss'],
+})
+export class TodoListComponent {
+  readonly todos = this.todoService.todos;
+
+  constructor(private todoService: TodoService) {}
+
+  changeStatus(todo: KeyValue<string, boolean>) {
+    this.todoService.changeStatus(todo);
+  }
+
++  remove(title: string) {
++    this.todoService.remove(title);
++  }
+}
+```
+
+下記のような画面になって、削除ボタンを押すと、サービスの `remove` メソッドが実行され 対象の`todo`が消えるようになっていれば OK です。
+
+![スクリーンショット 2022-03-07 10 46 29](https://user-images.githubusercontent.com/20474933/156953963-d25e0a2f-8bb7-4a6d-91ca-139cd7a9dd95.png)
+
+お疲れ様でした。
