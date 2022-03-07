@@ -1182,7 +1182,7 @@ export class TodoListComponent {
 
 内容は下記に乗せておきます。
 
-<details><summary>答え（一例）</summary>
+<details><summary><b>答え（一例）</b></summary>
 
 # add メソッドをサービスに移動
 
