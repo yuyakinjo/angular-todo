@@ -276,4 +276,4 @@ npm run lint
 
 お疲れ様でした 🐴
 
-次は [todo リスト作成編](https://github.com/yuyakinjo/angular-todo/blob/main/makdowns/todos.md) です。
+次は [todo リスト作成編](https://github.com/yuyakinjo/angular-todo/blob/main/markdowns/todos.md) です。

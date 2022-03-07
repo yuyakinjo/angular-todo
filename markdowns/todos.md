@@ -1321,4 +1321,4 @@ export class TodoListComponent {
 
 お疲れ様でした。
 
-次は [backup 編](https://github.com/yuyakinjo/angular-todo/blob/main/makdowns/backup.md) です。
+次は [backup 編](https://github.com/yuyakinjo/angular-todo/blob/main/markdowns/backup.md) です。

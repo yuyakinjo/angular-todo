@@ -1,7 +1,7 @@
 [nvm]: https://github.com/nvm-sh/nvm
-[setup]: https://github.com/yuyakinjo/angular-todo/blob/main/makdowns/setup.md
-[todos]: https://github.com/yuyakinjo/angular-todo/blob/main/makdowns/todos.md
-[backup]: https://github.com/yuyakinjo/angular-todo/blob/main/makdowns/backup.md
+[setup]: https://github.com/yuyakinjo/angular-todo/blob/main/markdowns/setup.md
+[todos]: https://github.com/yuyakinjo/angular-todo/blob/main/markdowns/todos.md
+[backup]: https://github.com/yuyakinjo/angular-todo/blob/main/markdowns/backup.md
 
 # Angular のハンズオン集
 
@@ -15,10 +15,8 @@
 - `Input()`を使用して、コンポーネント同士のデータを渡す方法
 - サービスを作成
 - パイプを自作
-- Mapオブジェクト
+- Map オブジェクト
 - localStorage
-
-
 
 # 環境
 
