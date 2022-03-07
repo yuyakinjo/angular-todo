@@ -3,7 +3,7 @@
 [todos]: https://github.com/yuyakinjo/angular-todo/blob/main/markdowns/todos.md
 [backup]: https://github.com/yuyakinjo/angular-todo/blob/main/markdowns/backup.md
 
-# Angular のハンズオン集
+# Angular のハンズオン TODO表作成編
 
 # 目的
 
