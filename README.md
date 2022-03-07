@@ -2,6 +2,8 @@
 [setup]: https://github.com/yuyakinjo/angular-todo/blob/main/markdowns/setup.md
 [todos]: https://github.com/yuyakinjo/angular-todo/blob/main/markdowns/todos.md
 [backup]: https://github.com/yuyakinjo/angular-todo/blob/main/markdowns/backup.md
+[angular_document]: https://angular.jp/
+[mdn]: https://developer.mozilla.org/ja/docs/Web
 
 # Angular のハンズオン TODO表作成編
 
@@ -49,3 +51,8 @@ node -v
 1. [セットアップ編][setup]
 2. [todo リスト作成編][todos]
 3. [backup 編][backup]
+
+# 参照
+
+- [Angular 日本語ドキュメンテーション][angular_document]
+- [MDN][mdn]
