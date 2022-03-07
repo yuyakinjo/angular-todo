@@ -7,7 +7,7 @@ API サーバーなどがある場合は、起動時に `todo` を取得して�
 [LocalStorage](https://developer.mozilla.org/ja/docs/Web/API/Window/localStorage) を使って、ブラウザにデータを保存したり、読み込んだりすることで、追加した `todo` を消えないようにしましょう。
 普段、LocalStorage を使う時は、プライバシー上漏れても問題のない設定がよいでしょう（ダークテーマとか)。
 
-# LocalStorage に保存
+# 保存するために文字列に変換
 
 LocalStorage は、キーと値を保存することができます。
 LocalStorage に保存するときの値は `string` 形式 になります。
@@ -84,3 +84,63 @@ export class TodoService {
 ```
 
 基本的に、`todos` が変化するのは サービス内でのみなので、コンポーネントなどで呼び出されても、backup を`backup` メソッドは呼び出す必要がありません。 メソッドとして呼び出させたくないときは、[プライベートフィールド(#)][プライベートフィールド]を使用します。[プライベートフィールド(#)][プライベートフィールド]は、クラス内でのみ使用できます。
+
+# LocalStorage から 読み出し
+
+次は、LocalStorage から `todos` を読み込んで、Map オブジェクトの初期値として使用します。
+Map オブジェクトの初期値として使用するには、new Map()の第一引数に取り込むと良さそうです。
+コードが長くなるので、`snapshot`　という名前のメンバーにして切り出しておきます。
+
+## **`src/app/services/todo.service.ts`**
+
+```diff
+import { KeyValue } from '@angular/common';
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class TodoService {
++  snapshot = Object.entries<boolean>(
++    JSON.parse(localStorage.getItem('todos') ?? '{}')
++  );
+
++  readonly todos = new Map<string, boolean>(this.snapshot);
+
+  changeStatus(todo: KeyValue<string, boolean>) {
+    this.todos.set(todo.key, !todo.value);
+    this.#backup();
+  }
+
+  remove(title: string) {
+    this.todos.delete(title);
+    this.#backup();
+  }
+
+  add(title: string) {
+    this.todos.set(title, false);
+    this.#backup();
+  }
+
+  #backup() {
+    const mapToObject = Object.fromEntries(this.todos);
+    localStorage.setItem('todos', JSON.stringify(mapToObject));
+  }
+}
+```
+
+LocalStorage から読み込むには、`localStorage.getItem` を使用します。
+しかし、対象のキーが存在しない場合は、`null` を返します。
+`null`を返すと、Object.entries() は エラー を返してしまいます。
+
+`??` は [Null 合体演算子](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator) といい `null` と `undefined` だった時のみ、`"{}"` を返すという挙動をさせています。
+
+もし`localStorage`が `null`を返した時は、空のオブジェクト`{}` を 返してあげると、Object.entries はエラーを返さなくなります。
+
+ちなみに、LocalStorage で保存したデータは、下記のように検証ウィンドウで確認することができます。
+
+![スクリーンショット 2022-03-07 12 57 47](https://user-images.githubusercontent.com/20474933/156965521-19a530be-bddd-4653-8cec-ad7633d4e3f0.png)
+
+todo を追加したり、ブラウザをリロードしたりしてみても、操作前と同じのはずです。
+
+これで、`todos` を保存することができました。
