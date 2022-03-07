@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "publish": "ng deploy --base-href=/angular-todo/",
+    "unpublish": "git push --delete origin gh-pages"
   },
   "private": true,
   "dependencies": {
