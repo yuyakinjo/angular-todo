@@ -1170,6 +1170,155 @@ export class TodoListComponent {
 
 ![スクリーンショット 2022-03-07 10 46 29](https://user-images.githubusercontent.com/20474933/156953963-d25e0a2f-8bb7-4a6d-91ca-139cd7a9dd95.png)
 
+# やってみよう（Try）
+
+まだ実は最適化を残している箇所があります。
+
+- add メソッドをサービスに移動
+- todo-list コンポーネントの HTML を `@Input` を使って `未完了` と `完了` を分ける
+- todo がない時はタイトルを非表示
+
+これまでの内容でできるようになっていますので、ぜひやってみましょう。
+
+内容は下記に乗せておきます。
+
+<details><summary>答え（一例）</summary>
+
+# add メソッドをサービスに移動
+
+## **`src/app/services/todo.service.ts`**
+
+```typescript
+import { KeyValue } from "@angular/common";
+import { Injectable } from "@angular/core";
+
+@Injectable({
+  providedIn: "root",
+})
+export class TodoService {
+  readonly todos = new Map<string, boolean>();
+
+  changeStatus(todo: KeyValue<string, boolean>) {
+    this.todos.set(todo.key, !todo.value);
+    this.#backup();
+  }
+
+  remove(title: string) {
+    this.todos.delete(title);
+    this.#backup();
+  }
+
+  add(title: string) {
+    this.todos.set(title, false);
+    this.#backup();
+  }
+
+  #backup() {
+    const mapToObject = Object.fromEntries(this.todos);
+    localStorage.setItem("todos", JSON.stringify(mapToObject));
+  }
+}
+```
+
+## **`src/app/components/todo-form/todo-form.component.ts`**
+
+```typescript
+import { Component } from "@angular/core";
+import { FormControl } from "@angular/forms";
+import { TodoService } from "src/app/services/todo.service";
+
+@Component({
+  selector: "app-todo-form",
+  templateUrl: "./todo-form.component.html",
+  styleUrls: ["./todo-form.component.scss"],
+})
+export class TodoFormComponent {
+  readonly form = new FormControl("");
+
+  todos = this.todoService.todos;
+
+  constructor(private todoService: TodoService) {}
+
+  add() {
+    if (!this.form.value) return;
+    this.todoService.add(this.form.value);
+    this.form.setValue("");
+  }
+}
+```
+
+# todo-list コンポーネントの HTML を @Input を使って 未完了 と 完了 を分ける
+
+## **`src/app/components/todo-list/todo-list.component.html`**
+
+```html
+<ul>
+  <h2>{{ hasDone ? "完了" : "未完了" }}</h2>
+  <li *ngFor="let todo of todos | keyvalue | done: hasDone">
+    <input type="checkbox" [checked]="todo.value" (click)="changeStatus(todo)" />
+    <span>{{ todo.key }}</span>
+    <button (click)="remove(todo.key)">削除</button>
+  </li>
+</ul>
+```
+
+## **`src/app/components/todo-list/todo-list.component.ts`**
+
+```typescript
+import { KeyValue } from "@angular/common";
+import { Component, Input } from "@angular/core";
+import { TodoService } from "src/app/services/todo.service";
+
+@Component({
+  selector: "app-todo-list",
+  templateUrl: "./todo-list.component.html",
+  styleUrls: ["./todo-list.component.scss"],
+})
+export class TodoListComponent {
+  @Input() hasDone = false;
+
+  readonly todos = this.todoService.todos;
+
+  constructor(private todoService: TodoService) {}
+
+  changeStatus(todo: KeyValue<string, boolean>) {
+    this.todoService.changeStatus(todo);
+  }
+
+  remove(title: string) {
+    this.todoService.remove(title);
+  }
+}
+```
+
+```html
+<h1>{{ title | uppercase }}</h1>
+
+<app-todo-form></app-todo-form>
+
+<app-todo-list></app-todo-list>
+<app-todo-list [hasDone]="true"></app-todo-list>
+```
+
+# todo がない時はタイトルを非表示
+
+## **`src/app/components/todo-list/todo-list.component.html`**
+
+```html
+<ul>
+  <ng-container *ngIf="todos | keyvalue | done: hasDone as filterd">
+    <h2 *ngIf="filterd.length">{{ hasDone ? "完了" : "未完了" }}</h2>
+    <li *ngFor="let todo of filterd">
+      <input type="checkbox" [checked]="todo.value" (click)="changeStatus(todo)" />
+      <span>{{ todo.key }}</span>
+      <button (click)="remove(todo.key)">削除</button>
+    </li>
+  </ng-container>
+</ul>
+```
+
+</details>
+
 お疲れ様でした。
 
 次は[backup 編](https://github.com/yuyakinjo/angular-todo/blob/main/makdowns/backup.md)です。
