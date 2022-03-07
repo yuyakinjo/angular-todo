@@ -275,3 +275,5 @@ npm run lint
 セレクターは元に戻しておきましょう。
 
 お疲れ様でした 🐴
+
+次は [todo リスト作成編](https://github.com/yuyakinjo/angular-todo/blob/main/makdowns/todos.md) です。

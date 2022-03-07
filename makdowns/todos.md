@@ -19,7 +19,9 @@
 
 # パイプを使ってみる
 
-まずは[Angular のパイプ][angular_pipe_introduction]を使ってみましょう。
+todo リストを作る前に、まずは[Angular のパイプ][angular_pipe_introduction]を使ってみましょう。
+後にパイプを自作するので、あらかじめ Angular に備えられたパイプを使ってみます。
+
 Pipe とは AngularJS でいう「フィルター」です。
 使用場所はテンプレート側で、`{{ hello | uppercase }}`のように使用します。
 
@@ -52,7 +54,7 @@ export class AppComponent {
 1 の方法だと、別のコンポーネントでも同じ処理があった場合、また同じ処理をコードで書く必要があります。
 2 の方法では、パイプを使って、コードを書く必要がなくなります。
 
-今回はパイプを使ってみましょう。
+今回は 2 の 方法で、実装してみましょう。
 
 ### **`src/app/app.component.html`**
 
@@ -69,7 +71,7 @@ export class AppComponent {
 # todo リストを表示
 
 つづいて、todo リストを表示してみましょう。
-todo は複数を想定あるはずなので、配列にいれちゃえ、となりそうですが
+todo は複数あるはずなので、配列にいれちゃえ、となりそうですが
 [Map オブジェクト][map]を使って、簡単にデータの操作ができるので今回はそちらを使います。
 
 ### **`src/app/app.component.ts`**
@@ -430,7 +432,9 @@ const undones = todos.filter((todo) => !Reflect.get(todo, Reflect.ownKeys(todo).
 - すごく見通し悪いです(Object.keys などを使っても同じでしょう) 💦
 - `at(0)` は `Reflect.ownKeys(todo)` の 0 番目の要素を取得していますが、0 とか使いたくないですね
 
-しかし、今回は Map オブジェクトを使用していて、Map オブジェクトには、現在のデータを分割するようなメソッドはありません。
+しかし、今回は Map オブジェクトを使用していて、Map オブジェクトには、配列の　`filter` のような データを分割するようなメソッドはありません。
+
+これをパイプを使って分けてみます。
 
 ## パイプを自作
 
@@ -495,7 +499,9 @@ export class DonePipe implements PipeTransform {
 ![スクリーンショット 2022-03-04 18 19 11](https://user-images.githubusercontent.com/20474933/156735343-2e4a3386-b227-46f1-baef-b01faaec53ac.png)
 
 今作成した todo を完了してみてください。
-そうすると、未完了のみが表示されるので、完了した todo が消えるようになります。
+そうすると、未完了のみが表示されるので、完了した todo が消えてしまいます。
+
+次は、完了も表示していきます。
 
 ## 未完了・完了を表示
 
@@ -563,6 +569,8 @@ export class DonePipe implements PipeTransform {
 各 todo の個数を表示するようにしましょう。
 
 それには一度、`done`パイプを通過した後の個数が知りたいです。
+done パイプを通過した後の変数を、`as hoge` のように代入できます。
+これでコンポーネント側に、メンバーを作らなくてもよくなります。
 
 ## **`src/app/app.component.html`**
 
@@ -571,7 +579,6 @@ export class DonePipe implements PipeTransform {
 
 <input type="text" [formControl]="form" placeholder="タイトルを入力" />
 <button (click)="add()" *ngIf="!!form.value">追加</button>
-+ <h2>登録数 {{ todos.size }}</h2>
 
 <ul>
 +  <ng-container *ngIf="todos | keyvalue | done: false as undones">
@@ -602,9 +609,8 @@ export class DonePipe implements PipeTransform {
 
 ## ポイント
 
-1. Map オブジェクトは `size` というメソッドで個数を取得できます。
-2. `ng-container` は React でいう `Fragment` と同じです。実際にはレンダリングされません。
-3. `done`パイプ通過後のデータは `as` を使って、`undoens` と `dones` として取得します。
+1. `ng-container` は React でいう `Fragment` と同じです。実際にはレンダリングされません。
+2. `done`パイプ通過後のデータは `as` を使って、`undoens` と `dones` として取得します。
 
 下記のように表示ができれば OK です。
 
@@ -648,9 +654,9 @@ npx ng g c components/todo-list
 <button (click)="add()" *ngIf="!!form.value">追加</button>
 
 + <app-todo-list></app-todo-list>
-<ul>
-  <h2>未完了</h2>
-  <li *ngFor="let todo of todos | keyvalue | done: false">
+<ng-container *ngIf="todos | keyvalue | done: false as undones">
+  <h3>未完了 {{ undones.length }}</h3>
+  <li *ngFor="let todo of undones">
     <input
       type="checkbox"
       [checked]="todo.value"
@@ -658,8 +664,11 @@ npx ng g c components/todo-list
     />
     <span>{{ todo.key }}</span>
   </li>
-  <h2>完了</h2>
-  <li *ngFor="let todo of todos | keyvalue | done: true">
+</ng-container>
+
+<ng-container *ngIf="todos | keyvalue | done: true as dones">
+  <h3>完了 {{ dones.length }}</h3>
+  <li *ngFor="let todo of dones">
     <input
       type="checkbox"
       [checked]="todo.value"
@@ -667,7 +676,7 @@ npx ng g c components/todo-list
     />
     <span>{{ todo.key }}</span>
   </li>
-</ul>
+</ng-container>
 
 ```
 
@@ -686,8 +695,9 @@ app.component.ts に 記述されている todo-list の箇所を移植します
 
 ```diff
 + <ul>
-+   <h2>未完了</h2>
-+   <li *ngFor="let todo of todos | keyvalue | done: false">
++ <ng-container *ngIf="todos | keyvalue | done: false as undones">
++   <h3>未完了 {{ undones.length }}</h3>
++   <li *ngFor="let todo of undones">
 +     <input
 +       type="checkbox"
 +       [checked]="todo.value"
@@ -695,8 +705,11 @@ app.component.ts に 記述されている todo-list の箇所を移植します
 +     />
 +     <span>{{ todo.key }}</span>
 +   </li>
-+   <h2>完了</h2>
-+   <li *ngFor="let todo of todos | keyvalue | done: true">
++ </ng-container>
++
++ <ng-container *ngIf="todos | keyvalue | done: true as dones">
++   <h3>完了 {{ dones.length }}</h3>
++   <li *ngFor="let todo of dones">
 +     <input
 +       type="checkbox"
 +       [checked]="todo.value"
@@ -704,6 +717,7 @@ app.component.ts に 記述されている todo-list の箇所を移植します
 +     />
 +     <span>{{ todo.key }}</span>
 +   </li>
++ </ng-container>
 + </ul>
 ```
 
@@ -737,27 +751,6 @@ export class TodoListComponent {
 <button (click)="add()" *ngIf="!!form.value">追加</button>
 
 <app-todo-list></app-todo-list>
-- <ul>
--  <h2>未完了</h2>
--  <li *ngFor="let todo of todos | keyvalue | done: false">
--    <input
--      type="checkbox"
--      [checked]="todo.value"
--      (click)="changeStatus(todo)"
--    />
--    <span>{{ todo.key }}</span>
--  </li>
--  <h2>完了</h2>
--  <li *ngFor="let todo of todos | keyvalue | done: true">
--    <input
--      type="checkbox"
--      [checked]="todo.value"
--      (click)="changeStatus(todo)"
--    />
--    <span>{{ todo.key }}</span>
--  </li>
-- </ul>
-
 ```
 
 ## **`src/app/app.component.ts`**
@@ -1070,7 +1063,7 @@ export class TodoFormComponent {
 
 ![スクリーンショット 2022-03-07 10 27 45](https://user-images.githubusercontent.com/20474933/156952660-fb70321c-8ed2-42cf-9fd5-91652d9ab6bb.png)
 
-# 削除機能追加
+# 削除機能の実装
 
 残りの機能を追加していきます。
 
@@ -1081,7 +1074,7 @@ export class TodoFormComponent {
 
 まずはサービスに削除機能を追加 → コンポーネントで実装という流れにしましょう。
 
-## サービスで削除機能追加
+## サービスに削除機能を実装
 
 ## **`src/app/services/todo.service.ts`**
 
@@ -1116,26 +1109,31 @@ Map オブジェクト には、delete メソッドに、key を渡すことで�
 
 ```diff
 <ul>
-  <h2>未完了</h2>
-  <li *ngFor="let todo of todos | keyvalue | done: false">
-    <input
-      type="checkbox"
-      [checked]="todo.value"
-      (click)="changeStatus(todo)"
-    />
-    <span>{{ todo.key }}</span>
+ <ng-container *ngIf="todos | keyvalue | done: false as undones">
+   <h3>未完了 {{ undones.length }}</h3>
+   <li *ngFor="let todo of undones">
+     <input
+       type="checkbox"
+       [checked]="todo.value"
+       (click)="changeStatus(todo)"
+     />
+     <span>{{ todo.key }}</span>
 +    <button (click)="remove(todo.key)">削除</button>
-  </li>
-  <h2>完了</h2>
-  <li *ngFor="let todo of todos | keyvalue | done: true">
-    <input
-      type="checkbox"
-      [checked]="todo.value"
-      (click)="changeStatus(todo)"
-    />
-    <span>{{ todo.key }}</span>
+   </li>
+ </ng-container>
+
+ <ng-container *ngIf="todos | keyvalue | done: true as dones">
+   <h3>完了 {{ dones.length }}</h3>
+   <li *ngFor="let todo of dones">
+     <input
+       type="checkbox"
+       [checked]="todo.value"
+       (click)="changeStatus(todo)"
+     />
+     <span>{{ todo.key }}</span>
 +    <button (click)="remove(todo.key)">削除</button>
-  </li>
+   </li>
+ </ng-container>
 </ul>
 ```
 
@@ -1253,12 +1251,14 @@ export class TodoFormComponent {
 
 ```html
 <ul>
-  <h2>{{ hasDone ? "完了" : "未完了" }}</h2>
-  <li *ngFor="let todo of todos | keyvalue | done: hasDone">
-    <input type="checkbox" [checked]="todo.value" (click)="changeStatus(todo)" />
-    <span>{{ todo.key }}</span>
-    <button (click)="remove(todo.key)">削除</button>
-  </li>
+  <ng-container *ngIf="todos | keyvalue | done: hasDone as filterd">
+    <h2>{{ hasDone ? "完了" : "未完了" }}</h2>
+    <li *ngFor="let todo of filterd">
+      <input type="checkbox" [checked]="todo.value" (click)="changeStatus(todo)" />
+      <span>{{ todo.key }}</span>
+      <button (click)="remove(todo.key)">削除</button>
+    </li>
+  </ng-container>
 </ul>
 ```
 
@@ -1307,7 +1307,7 @@ export class TodoListComponent {
 ```html
 <ul>
   <ng-container *ngIf="todos | keyvalue | done: hasDone as filterd">
-    <h2 *ngIf="filterd.length">{{ hasDone ? "完了" : "未完了" }}</h2>
+    <h2 *ngIf="filterd.length">{{ hasDone ? "完了" : "未完了" }} {{ filterd.length }}</h2>
     <li *ngFor="let todo of filterd">
       <input type="checkbox" [checked]="todo.value" (click)="changeStatus(todo)" />
       <span>{{ todo.key }}</span>
@@ -1321,4 +1321,4 @@ export class TodoListComponent {
 
 お疲れ様でした。
 
-次は[backup 編](https://github.com/yuyakinjo/angular-todo/blob/main/makdowns/backup.md)です。
+次は [backup 編](https://github.com/yuyakinjo/angular-todo/blob/main/makdowns/backup.md) です。

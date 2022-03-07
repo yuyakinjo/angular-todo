@@ -1,5 +1,7 @@
 [nvm]: https://github.com/nvm-sh/nvm
 [setup]: https://github.com/yuyakinjo/angular-todo/blob/main/makdowns/setup.md
+[todos]: https://github.com/yuyakinjo/angular-todo/blob/main/makdowns/todos.md
+[backup]: https://github.com/yuyakinjo/angular-todo/blob/main/makdowns/backup.md
 
 # Angular のハンズオン集
 
@@ -40,3 +42,5 @@ node -v
 # 目次
 
 1. [セットアップ編][setup]
+2. [todo リスト作成編][todos]
+3. [backup 編][backup]

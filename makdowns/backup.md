@@ -1,4 +1,5 @@
 [プライベートフィールド]: https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Classes/Private_class_fields
+[マテリアルデザイン]: https://material.angular.io/
 
 # LocalStorage に保存
 
@@ -144,3 +145,11 @@ LocalStorage から読み込むには、`localStorage.getItem` を使用しま�
 todo を追加したり、ブラウザをリロードしたりしてみても、操作前と同じのはずです。
 
 これで、`todos` を保存することができました。
+
+TODO 作成編はここまでです。
+
+要件は満たした実装は完了です。
+
+しかし、このアプリにはまだスタイルがいけてないため、[マテリアルデザイン][マテリアルデザイン]に挑戦するのもおすすめです。
+
+こちらも React や Vue などのフレームワークに用意されているデザインフレームワークと同じような API で[マテリアルデザイン][マテリアルデザイン]を構築することができます。
