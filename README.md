@@ -5,7 +5,7 @@
 [angular_document]: https://angular.jp/
 [mdn]: https://developer.mozilla.org/ja/docs/Web
 
-# Angular のハンズオン TODO表作成編
+# Angular のハンズオン TODO 表作成編
 
 # 目的
 
