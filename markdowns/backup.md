@@ -150,13 +150,15 @@ TODO 作成編はここまでです。
 
 お疲れさまです 🐴
 
+要件は満たした実装は完了です。
+
 つぎは余力があれば、オプションを試してみてください。
 
 - [デコレーターを使う](https://github.com/yuyakinjo/angular-todo/blob/main/markdowns/decorator.md)（所要時間 5 分）
 - [Github Pages にデプロイ](https://github.com/yuyakinjo/angular-todo/blob/main/markdowns/deploy.md)（所要時間 5 分）
 
-要件は満たした実装は完了です。
+このアプリにはまだスタイルがいけてないため、[マテリアルデザイン][マテリアルデザイン]に挑戦するのもおすすめです。
 
-しかし、このアプリにはまだスタイルがいけてないため、[マテリアルデザイン][マテリアルデザイン]に挑戦するのもおすすめです。
+- [マテリアルデザインを使う](https://github.com/yuyakinjo/angular-todo/blob/main/markdowns/material.md)（所要時間 10 分）
 
 こちらも React や Vue などのフレームワークに用意されているデザインフレームワークと同じような API で[マテリアルデザイン][マテリアルデザイン]を構築することができます。
