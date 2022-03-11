@@ -1,5 +1,6 @@
 import { KeyValue } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { Confirm } from '../decorators';
 import { TodoService } from '../service/todo.service';
 
 @Component({
@@ -22,6 +23,7 @@ export class TodoListComponent {
     this.todoService.changeStatus(todo);
   }
 
+  @Confirm('削除してもいいですか？')
   remove(title: string) {
     this.todoService.delete(title);
   }
