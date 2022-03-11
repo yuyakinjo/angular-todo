@@ -152,8 +152,8 @@ TODO 作成編はここまでです。
 
 つぎは余力があれば、オプションを試してみてください。
 
-- [デコレーターを使う](https://github.com/yuyakinjo/angular-todo/blob/main/markdowns/decorator.md)
-- [Github Pages にデプロイ](https://github.com/yuyakinjo/angular-todo/blob/main/markdowns/deploy.md)（所要時間 3 分）
+- [デコレーターを使う](https://github.com/yuyakinjo/angular-todo/blob/main/markdowns/decorator.md)（所要時間 5 分）
+- [Github Pages にデプロイ](https://github.com/yuyakinjo/angular-todo/blob/main/markdowns/deploy.md)（所要時間 5 分）
 
 要件は満たした実装は完了です。
 
