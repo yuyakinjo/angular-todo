@@ -1,10 +1,9 @@
-<ul>
-  <ng-container *ngIf="todos | keyvalue | done: status as filterd">
-    <h3 *ngIf="filterd.length">{{ status ? doneLabel : inProcessLabel }} {{ filterd.length }}</h3>
-    <li *ngFor="let todo of filterd">
-      <input type="checkbox" [checked]="todo.value" (click)="changeStatus(todo)" />
-      <span>{{ todo.key }}</span>
-      <button (click)="remove(todo.key)">削除</button>
-    </li>
-  </ng-container>
-</ul>
+<ng-container *ngIf="todos | keyvalue | done: status as filterd">
+  <h3 *ngIf="filterd.length">{{ status ? doneLabel : inProcessLabel }} {{ filterd.length }}</h3>
+  <mat-list role="list">
+    <mat-list-item role="listitem" *ngFor="let todo of filterd">
+      <mat-checkbox color="primary" [checked]="todo.value" (change)="changeStatus(todo)">{{ todo.key }}</mat-checkbox>
+      <button mat-icon-button (click)="remove(todo.key)"><mat-icon color="warn">delete</mat-icon></button>
+    </mat-list-item>
+  </mat-list>
+</ng-container>

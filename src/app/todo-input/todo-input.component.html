@@ -1,2 +1,13 @@
-<input type="text" [formControl]="form" placeholder="タイトルを入力してください" />
-<button (click)="add()" *ngIf="!!form.value">追加</button>
+<mat-form-field appearance="standard" [style.width]="'50vw'">
+  <mat-label>タイトル</mat-label>
+  <input matInput type="text" [formControl]="form" placeholder="タイトルを入力してください" />
+  <mat-hint
+    >見たい<a href="https://www.amazon.co.jp/gp/video/storefront" rel="noopener noreferrer" target="blank"
+      >Primeチャンネル</a
+    >など</mat-hint
+  >
+</mat-form-field>
+<button mat-raised-button (click)="add()" *ngIf="!!form.value" color="primary" [style.margin-left]="'1vw'">
+  <mat-icon>add</mat-icon>
+  <span>追加</span>
+</button>
